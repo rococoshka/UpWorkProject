@@ -14,7 +14,6 @@ change_ssh_port () {
 		then defport=`grep '^#Port' /etc/ssh/sshd_config`
 
 	fi
-#	temp=`echo $defport`
 	sed -i "s/${defport}/Port ${sshport}/" /etc/ssh/sshd_config
 	systemctl restart ssh
 }
@@ -30,6 +29,47 @@ firewall_setup () {
 
 }
 
+nginx_default() {
+	printf "server {
+	listen 80 default_server;
+	listen [::]:80 default_server;
+	server_tokens off;
+	default_type \"text/html\";
+	return 200 'This is default http';
+	}
+server {
+	listen 443 ssl default_server;
+	listen [::]:443 ssl default_server;
+	ssl_certificate default.crt;
+	ssl_certificate_key default.key;
+	server_tokens off;
+	default_type \"text/html\";
+	return 200 'This is default https';
+	}" > /etc/nginx/sites-enabled/default
+
+}
+
+certkeygen() {
+	cd /etc/nginx/
+	openssl req -x509 -out default.crt -keyout default.key \
+	-newkey rsa:2048 -nodes -sha256 -subj '/CN=localhost' -extensions EXT -config <(printf "
+	[dn]
+	CN=localhost
+	[req]
+	distinguished_name = dn
+	[EXT]
+	subjectAltName=DNS:localhost
+	keyUsage=digitalSignature
+	extendedKeyUsage=serverAuth")
+}
+ 
+setup_default_site() {
+	nginx_default
+	certkeygen
+	nginx -s reload
+}
+
 #upgradeSys_installPack
 change_ssh_port
 firewall_setup
+setup_default_site
