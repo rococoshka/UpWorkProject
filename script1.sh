@@ -2,13 +2,13 @@
 
 sshport="$1"
 
-upgradeSys_installPack{
+upgradeSys_installPack () {
 	apt update
 	apt upgrade -y
 	apt install --no-install-recommends -y mysql-server nginx php php-fpm php-mysql unattended-upgrades fail2ban
 }
 
-change_ssh_port{
+change_ssh_port () {
 	sed -i 's/.Port 22/Port $sshport/' /etc/ssh/sshd_config
 	/etc/init.d/sshd restart
 }
