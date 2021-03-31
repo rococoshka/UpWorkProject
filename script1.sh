@@ -9,10 +9,27 @@ upgradeSys_installPack () {
 }
 
 change_ssh_port () {
-	defport=`grep -c '^Port' /etc/sss/sshd_config`
-	sed -i 's/'$defport'/Port '$sshport'/' /etc/ssh/sshd_config
+	defport=`grep '^Port' /etc/ssh/sshd_config`
+	if [ -z "$defport" ];
+		then defport=`grep '^#Port' /etc/ssh/sshd_config`
+
+	fi
+#	temp=`echo $defport`
+	sed -i "s/${defport}/Port ${sshport}/" /etc/ssh/sshd_config
 	systemctl restart ssh
 }
 
-upgradeSys_installPack
+firewall_setup () {
+
+	ufw default deny incoming
+	ufw default allow outgoing
+	ufw allow "$sshport"
+	ufw allow http
+	ufw allow https
+	ufw enable
+
+}
+
+#upgradeSys_installPack
 change_ssh_port
+firewall_setup
