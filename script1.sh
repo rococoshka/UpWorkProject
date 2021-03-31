@@ -10,7 +10,7 @@ upgradeSys_installPack () {
 
 change_ssh_port () {
 	sed -i 's/.Port 22/Port $sshport/' /etc/ssh/sshd_config
-	/etc/init.d/sshd restart
+	/etc/init.d/ssh restart
 }
 
 change_ssh_port
