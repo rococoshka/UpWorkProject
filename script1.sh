@@ -1,6 +1,9 @@
 #!/bin/bash
 
 sshport="$1"
+sftpuser="$2"
+sftppass="$3"
+
 
 upgradeSys_installPack () {
 	apt update
@@ -16,6 +19,10 @@ change_ssh_port () {
 	fi
 	sed -i "s/${defport}/Port ${sshport}/" /etc/ssh/sshd_config
 	systemctl restart ssh
+}
+
+auto_sec_update() {
+	dpkg-reconfigure -f noninteractive unattended-upgrades
 }
 
 firewall_setup () {
@@ -69,7 +76,32 @@ setup_default_site() {
 	nginx -s reload
 }
 
+setup_sftp() {
+	addgroup sftp-group
+	adduser -g sftp-group -p "$sftppass" "$sftpuser"
+	mkdir -p /var/sftp/"$sftpuser"
+	sudo chown root:root /var/sftp
+	sudo chmod 755 /var/sftp
+	sudo chown "$sftpuser":sftp-group /var/sftp/"$sftpuser"
+	
+	check=`grep '^Match User "$sftpuser"' /etc/ssh/sshd_config`
+	if [ -z "$check" ];
+		then printf "Match User ${sftpuser}
+ForceCommand internal-sftp
+PasswordAuthentication yes
+ChrootDirectory /var/sftp
+PermitTunnel no
+AllowAgentForwarding no
+AllowTcpForwarding no
+X11Forwarding no" >> /etc/ssh/sshd_config
+
+	systemctl restart sshd
+}
+
+
+
 #upgradeSys_installPack
 change_ssh_port
 firewall_setup
 setup_default_site
+setup_sftp
