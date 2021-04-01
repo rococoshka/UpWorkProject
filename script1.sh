@@ -14,7 +14,7 @@ upgradeSys_installPack () {
 change_ssh_port () {
 	defport=`grep '^Port' /etc/ssh/sshd_config`
 	if [ -z "$defport" ];
-		then defport=`grep '^#Port' /etc/ssh/sshd_config`
+		then printf "Port $sshport " >> /etc/ssh/sshd_config`
 
 	fi
 	sed -i "s/${defport}/Port ${sshport}/" /etc/ssh/sshd_config
