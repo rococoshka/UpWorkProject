@@ -28,7 +28,6 @@ dehydrated -c
 
 setup_ssl_nginx() {
 	printf "server {
-		server {
       listen 443 ssl;
       server_name $yourdomain www.$yourdomain;
 
