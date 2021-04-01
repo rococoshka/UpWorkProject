@@ -4,19 +4,19 @@ sshport="$1"
 sftpuser="$2"
 sftppass="$3"
 
-
-upgradeSys_installPack () {
+upgradeSys_installPack() {
 	apt update
 	apt upgrade -y
 	apt install --no-install-recommends -y mysql-server nginx php php-fpm php-mysql unattended-upgrades fail2ban
 }
 
-change_ssh_port () {
+change_ssh_port() {
 	defport=`grep '^Port' /etc/ssh/sshd_config`
 	if [ -z "$defport" ];
-		then printf "Port $sshport " >> /etc/ssh/sshd_config`
+		then printf "Port $sshport" >> /etc/ssh/sshd_config
 
 	fi
+	defport=`grep '^Port' /etc/ssh/sshd_config`
 	sed -i "s/${defport}/Port ${sshport}/" /etc/ssh/sshd_config
 	systemctl restart ssh
 }
@@ -25,11 +25,12 @@ auto_sec_update() {
 	dpkg-reconfigure -f noninteractive unattended-upgrades
 }
 
-firewall_setup () {
+firewall_setup() {
 
 	ufw default deny incoming
 	ufw default allow outgoing
 	ufw allow "$sshport"
+	ufw allow ssh
 	ufw allow http
 	ufw allow https
 	ufw enable
@@ -77,31 +78,34 @@ setup_default_site() {
 }
 
 setup_sftp() {
-	addgroup sftp-group
-	adduser -g sftp-group -p "$sftppass" "$sftpuser"
-	mkdir -p /var/sftp/"$sftpuser"
+	useradd  $sftpuser
+	passwd $sftpuser
+	mkdir  /var/sftp/$sftpuser
 	sudo chown root:root /var/sftp
 	sudo chmod 755 /var/sftp
-	sudo chown "$sftpuser":sftp-group /var/sftp/"$sftpuser"
-	
-	check=`grep '^Match User "$sftpuser"' /etc/ssh/sshd_config`
+	sudo chown $sftpuser:$sftpuser /var/sftp/$sftpuser
+	check=`grep '^Match User $sftpuser' /etc/ssh/sshd_config`
 	if [ -z "$check" ];
-		then printf "Match User $sftpuser
+		then printf "
+Match User $sftpuser
 	ForceCommand internal-sftp
-PasswordAuthentication yes
-ChrootDirectory /var/sftp
-PermitTunnel no
-AllowAgentForwarding no
-AllowTcpForwarding no
-X11Forwarding no" >> /etc/ssh/sshd_config
+	PasswordAuthentication yes
+	ChrootDirectory /var/sftp
+	PermitTunnel no
+	AllowAgentForwarding no
+	AllowTcpForwarding no
+	X11Forwarding no" >> /etc/ssh/sshd_config
 	fi
+echo "$check"
+echo "$sftppass"
 	systemctl restart ssh
 }
 
 
 
 #upgradeSys_installPack
-change_ssh_port
-firewall_setup
-setup_default_site
+#change_ssh_port
+#firewall_setup
+#auto_sec_update
+#setup_default_site
 setup_sftp
