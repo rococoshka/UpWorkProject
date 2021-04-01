@@ -7,7 +7,7 @@ sftppass="$3"
 upgradeSys_installPack() {
 	apt update
 	apt upgrade -y
-	apt install --no-install-recommends -y mysql-server nginx php php-fpm php-mysql unattended-upgrades fail2ban
+	apt install --no-install-recommends -y mysql-server nginx php php-fpm php-mysql unattended-upgrades fail2ban dehydrated
 }
 
 change_ssh_port() {
@@ -103,9 +103,9 @@ echo "$sftppass"
 
 
 
-#upgradeSys_installPack
-#change_ssh_port
-#firewall_setup
-#auto_sec_update
-#setup_default_site
+upgradeSys_installPack
+change_ssh_port
+firewall_setup
+auto_sec_update
+setup_default_site
 setup_sftp
