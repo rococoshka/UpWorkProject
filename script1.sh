@@ -78,9 +78,9 @@ setup_default_site() {
 }
 
 setup_sftp() {
-	useradd  $sftpuser
+	useradd   $sftpuser
 	passwd $sftpuser
-	mkdir  /var/sftp/$sftpuser
+	mkdir /var/sftp /var/sftp/$sftpuser
 	sudo chown root:root /var/sftp
 	sudo chmod 755 /var/sftp
 	sudo chown $sftpuser:$sftpuser /var/sftp/$sftpuser
