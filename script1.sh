@@ -86,7 +86,7 @@ setup_sftp() {
 	
 	check=`grep '^Match User "$sftpuser"' /etc/ssh/sshd_config`
 	if [ -z "$check" ];
-		then printf "Match User ${sftpuser}
+		then printf "Match User $sftpuser
 ForceCommand internal-sftp
 PasswordAuthentication yes
 ChrootDirectory /var/sftp
