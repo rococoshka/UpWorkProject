@@ -81,9 +81,11 @@ setup_sftp() {
 		echo "Add name sftpuser par№2"
 	else
 		useradd   $sftpuser
+		echo "Enter password for sftp user"
 		passwd $sftpuser
-		sudo chown root:root /var
-		sudo chmod 777 /var/www
+		chown root:root /var
+		chmod 755 /var
+		chmod 777 -R /var/www
 		check=`grep '^Match User $sftpuser' /etc/ssh/sshd_config`
 		if [ -z "$check" ];
 			then printf "
