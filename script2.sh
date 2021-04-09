@@ -10,7 +10,7 @@ install_certboot() {
  
 nginx_configure() {
 	mkdir /var/www/"$yourdomain"  /var/www/"$yourdomain"/html
-
+	chmod 777 -R /var/www/"$yourdomain"
 	printf "
 server {
         listen 80;
