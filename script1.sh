@@ -82,17 +82,15 @@ setup_sftp() {
 	else
 		useradd   $sftpuser
 		passwd $sftpuser
-		mkdir /var/sftp /var/sftp/$sftpuser
-		sudo chown root:root /var/sftp
-		sudo chmod 755 /var/sftp
-		sudo chown $sftpuser:$sftpuser /var/sftp/$sftpuser
+		sudo chown root:root /var
+		sudo chmod 777 /var/www
 		check=`grep '^Match User $sftpuser' /etc/ssh/sshd_config`
 		if [ -z "$check" ];
 			then printf "
 Match User $sftpuser
 	ForceCommand internal-sftp
 	PasswordAuthentication yes
-	ChrootDirectory /var/sftp
+	ChrootDirectory /var
 	PermitTunnel no
 	AllowAgentForwarding no
 	AllowTcpForwarding no
