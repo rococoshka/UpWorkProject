@@ -102,7 +102,11 @@ Match User $sftpuser
 	systemctl restart ssh
 }
 
+mysql_secure() {
 
+	mysql_secure_installation
+
+}
 
 upgradeSys_installPack
 change_ssh_port
@@ -110,3 +114,4 @@ firewall_setup
 auto_sec_update
 setup_default_site
 setup_sftp
+mysql_secure
